@@ -1,10 +1,17 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "amirsalh12",
+  "name": "oay-yaqin",
   "main": "_worker.js",
   "compatibility_date": "2026-07-20",
   "assets": {
     "directory": ".",
     "not_found_handling": "single-page-application"
+  },
+  "env": {
+    "production": {
+      "vars": {
+        "GROQ_API_KEY": ""
+      }
+    }
   }
 }
