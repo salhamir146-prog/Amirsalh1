@@ -14,7 +14,6 @@ const CONFIG = {
     ADMIN_PASSWORD: 'Amirsalh1234@1234v',
 
     // === تنظیمات Proxy ===
-    // Cloudflare Pages Worker
     USE_PROXY: true,
     PROXY_URL: '/api/chat',
 
@@ -88,7 +87,7 @@ const CONFIG = {
 
     // === تنظیمات پیش‌فرض API ===
     DEFAULT_PROVIDER: 'groq',
-    DEFAULT_API_KEY: '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',
+    DEFAULT_API_KEY: '',
     DEFAULT_MODEL: 'llama-3.3-70b-versatile',
     DEFAULT_URL: 'https://api.groq.com/openai/v1/chat/completions',
 
