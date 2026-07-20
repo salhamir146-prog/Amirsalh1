@@ -1,0 +1,15 @@
+{
+  "name": "oay-yaqin",
+  "version": "1.0.0",
+  "description": "دستیار هوشمند مسجد حضرت ابوالفضل (ع) - اوای یقین",
+  "author": "امیر صالح جاودان",
+  "license": "MIT",
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "echo 'No build step required'"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}
