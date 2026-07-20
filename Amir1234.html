@@ -363,12 +363,10 @@
             allChats = [];
         }
 
-        // Sort by date (oldest first for report)
         allChats.sort(function(a, b) {
             return (a.timestamp || 0) - (b.timestamp || 0);
         });
 
-        // Stats
         var totalMessages = 0;
         var users = {};
         var firstDate = null;
@@ -388,7 +386,6 @@
         document.getElementById('total-users').textContent = Object.keys(users).length;
         document.getElementById('first-date').textContent = firstDate ? new Date(firstDate).toLocaleDateString('fa-IR') : '-';
 
-        // Render chats
         var chatList = document.getElementById('chat-list');
 
         function renderChats(searchTerm, filterDate, minMsgs) {
@@ -530,7 +527,6 @@
             URL.revokeObjectURL(url);
         };
 
-        // Export all to Excel
         document.getElementById('export-excel').addEventListener('click', function() {
             var csv = '\uFEFF';
             csv += 'شماره,نام کاربر,شماره تماس,تاریخ,تعداد پیام,اولین پیام\n';
@@ -562,7 +558,6 @@
             URL.revokeObjectURL(url);
         });
 
-        // Export all to HTML
         document.getElementById('export-html').addEventListener('click', function() {
             var html = '<html dir="rtl"><head><meta charset="UTF-8"><style>' +
                 'body{font-family:'Vazirmatn',Tahoma;font-size:12px;line-height:1.8;padding:20px;}' +
@@ -602,7 +597,6 @@
             URL.revokeObjectURL(url);
         });
 
-        // Search and filter events
         document.getElementById('search-input').addEventListener('input', function() {
             renderChats(this.value, document.getElementById('filter-date').value, document.getElementById('filter-min-msgs').value);
         });
