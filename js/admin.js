@@ -13,7 +13,6 @@
     var autoRefreshInterval = null;
 
     function init() {
-        // Load data
         try {
             var savedChats = localStorage.getItem('oay_chats');
             if (savedChats) allChats = JSON.parse(savedChats);
@@ -41,7 +40,6 @@
     }
 
     function bindEvents() {
-        // Tab buttons
         var tabBtns = document.querySelectorAll('.admin-tab');
         for (var i = 0; i < tabBtns.length; i++) {
             tabBtns[i].addEventListener('click', function() {
@@ -49,7 +47,6 @@
             });
         }
 
-        // Search chats
         var searchInput = document.getElementById('search-chats');
         if (searchInput) {
             searchInput.addEventListener('input', function() {
@@ -57,7 +54,6 @@
             });
         }
 
-        // Filter chats
         var filterDate = document.getElementById('filter-date');
         if (filterDate) {
             filterDate.addEventListener('change', function() {
@@ -72,7 +68,6 @@
             });
         }
 
-        // Personality
         var savePersonalityBtn = document.getElementById('save-personality');
         if (savePersonalityBtn) {
             savePersonalityBtn.addEventListener('click', savePersonality);
@@ -83,13 +78,11 @@
             resetPersonalityBtn.addEventListener('click', resetPersonality);
         }
 
-        // Training
         var addTrainingBtn = document.getElementById('add-training');
         if (addTrainingBtn) {
             addTrainingBtn.addEventListener('click', addTrainingItem);
         }
 
-        // Settings
         var saveSettingsBtn = document.getElementById('save-settings');
         if (saveSettingsBtn) {
             saveSettingsBtn.addEventListener('click', saveSettings);
@@ -100,7 +93,6 @@
             resetSettingsBtn.addEventListener('click', resetSettings);
         }
 
-        // Provider change
         var providerSelect = document.getElementById('setting-provider');
         if (providerSelect) {
             providerSelect.addEventListener('change', function() {
@@ -108,13 +100,11 @@
             });
         }
 
-        // Test API
         var testApiBtn = document.getElementById('test-api');
         if (testApiBtn) {
             testApiBtn.addEventListener('click', testApiConnection);
         }
 
-        // Data management
         var exportBtn = document.getElementById('export-data');
         if (exportBtn) {
             exportBtn.addEventListener('click', exportData);
@@ -130,7 +120,6 @@
             clearBtn.addEventListener('click', clearAllData);
         }
 
-        // Temperature slider
         var tempSlider = document.getElementById('setting-temperature');
         if (tempSlider) {
             tempSlider.addEventListener('input', function() {
@@ -139,7 +128,6 @@
             });
         }
 
-        // Top P slider
         var topPSlider = document.getElementById('setting-top-p');
         if (topPSlider) {
             topPSlider.addEventListener('input', function() {
@@ -148,7 +136,6 @@
             });
         }
 
-        // Frequency penalty slider
         var freqSlider = document.getElementById('setting-frequency-penalty');
         if (freqSlider) {
             freqSlider.addEventListener('input', function() {
@@ -157,7 +144,6 @@
             });
         }
 
-        // Presence penalty slider
         var presSlider = document.getElementById('setting-presence-penalty');
         if (presSlider) {
             presSlider.addEventListener('input', function() {
@@ -166,7 +152,6 @@
             });
         }
 
-        // Auto refresh toggle
         var autoRefreshToggle = document.getElementById('setting-auto-refresh');
         if (autoRefreshToggle) {
             autoRefreshToggle.addEventListener('change', function() {
@@ -206,7 +191,6 @@
     function startAutoRefresh() {
         if (autoRefreshInterval) clearInterval(autoRefreshInterval);
         autoRefreshInterval = setInterval(function() {
-            // Reload chats from localStorage
             try {
                 var saved = localStorage.getItem('oay_chats');
                 if (saved) {
@@ -219,7 +203,7 @@
                     }
                 }
             } catch(e) {}
-        }, 5000); // Every 5 seconds
+        }, 5000);
     }
 
     function stopAutoRefresh() {
@@ -242,13 +226,10 @@
         var today = new Date().toDateString();
         var todayChats = 0;
         var weekChats = 0;
-        var monthChats = 0;
         var now = new Date();
         var weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        var monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
         var dailyStats = {};
-        var weeklyStats = {};
 
         for (var i = 0; i < allChats.length; i++) {
             var chatDate = new Date(allChats[i].timestamp);
@@ -256,9 +237,7 @@
 
             if (dateStr === today) todayChats++;
             if (chatDate >= weekAgo) weekChats++;
-            if (chatDate >= monthAgo) monthChats++;
 
-            // Daily stats for chart
             var dayKey = chatDate.toLocaleDateString('fa-IR');
             if (!dailyStats[dayKey]) dailyStats[dayKey] = 0;
             dailyStats[dayKey]++;
@@ -268,7 +247,6 @@
         var statTotalMessages = document.getElementById('stat-total-messages');
         var statTodayChats = document.getElementById('stat-today-chats');
         var statWeekChats = document.getElementById('stat-week-chats');
-        var statMonthChats = document.getElementById('stat-month-chats');
         var statTraining = document.getElementById('stat-training-items');
         var statActiveUsers = document.getElementById('stat-active-users');
 
@@ -276,10 +254,8 @@
         if (statTotalMessages) statTotalMessages.textContent = totalMessages;
         if (statTodayChats) statTodayChats.textContent = todayChats;
         if (statWeekChats) statWeekChats.textContent = weekChats;
-        if (statMonthChats) statMonthChats.textContent = monthChats;
         if (statTraining) statTraining.textContent = botTraining.length;
 
-        // Active users (unique phones in last 7 days)
         var activeUsers = {};
         for (var i = 0; i < allChats.length; i++) {
             var chatDate = new Date(allChats[i].timestamp);
@@ -289,7 +265,6 @@
         }
         if (statActiveUsers) statActiveUsers.textContent = Object.keys(activeUsers).length;
 
-        // Render chart
         renderChart(dailyStats);
     }
 
@@ -303,7 +278,6 @@
             return;
         }
 
-        // Show last 14 days
         if (days.length > 14) {
             days = days.slice(days.length - 14);
         }
@@ -394,7 +368,6 @@
 
         var chats = allChats.slice();
 
-        // Apply filters
         var filterDate = document.getElementById('filter-date');
         var filterMinMsgs = document.getElementById('filter-min-msgs');
 
@@ -426,7 +399,6 @@
             });
         }
 
-        // Sort by newest first
         chats.sort(function(a, b) { return b.timestamp - a.timestamp; });
 
         if (chats.length === 0) {
@@ -470,7 +442,6 @@
 
         chatsList.innerHTML = html;
 
-        // Bind view buttons
         var viewBtns = chatsList.querySelectorAll('.view-btn');
         for (var i = 0; i < viewBtns.length; i++) {
             viewBtns[i].addEventListener('click', function() {
@@ -478,7 +449,6 @@
             });
         }
 
-        // Bind export buttons
         var exportBtns = chatsList.querySelectorAll('.export-btn');
         for (var i = 0; i < exportBtns.length; i++) {
             exportBtns[i].addEventListener('click', function() {
@@ -486,7 +456,6 @@
             });
         }
 
-        // Bind delete buttons
         var deleteBtns = chatsList.querySelectorAll('.delete-btn');
         for (var i = 0; i < deleteBtns.length; i++) {
             deleteBtns[i].addEventListener('click', function() {
@@ -709,13 +678,11 @@
             modelSelect.appendChild(option);
         }
 
-        // Update URL
         var urlInput = document.getElementById('setting-api-url');
         if (urlInput && provider !== 'custom') {
             urlInput.value = providerConfig.url;
         }
 
-        // Update API key hint
         var keyHint = document.getElementById('api-key-hint');
         if (keyHint) {
             keyHint.textContent = 'مثال: ' + (provider === 'openai' ? 'sk-...' : provider === 'anthropic' ? 'sk-ant-...' : provider === 'google' ? 'AIzaSy...' : 'gsk_...');
@@ -966,7 +933,7 @@
     }
 
     function exportExcel() {
-        var csv = '\uFEFF'; // BOM for Excel UTF-8
+        var csv = '\uFEFF';
         csv += 'شماره,نام کاربر,شماره تماس,تاریخ,تعداد پیام,اولین پیام\n';
 
         for (var i = 0; i < allChats.length; i++) {
@@ -1130,10 +1097,15 @@
         }, 3000);
     }
 
-    // Expose init function
-    window.initAdminPanel = init;
+    // ============================================
+    // EXPOSE FUNCTIONS FOR HTML
+    // ============================================
+    window.exportExcel = exportExcel;
+    window.exportPDF = exportPDF;
 
-    // Auto-init
+    // ============================================
+    // INIT
+    // ============================================
     function tryInit() {
         var adminContent = document.getElementById('admin-content');
         if (adminContent && adminContent.classList.contains('active')) {
