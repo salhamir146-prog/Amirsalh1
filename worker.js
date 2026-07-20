@@ -1,6 +1,4 @@
 // Cloudflare Worker - Proxy for Oay Yaqin AI
-// This hides the API key and bypasses filtering issues
-
 export default {
   async fetch(request, env, ctx) {
     // Handle CORS preflight
@@ -34,7 +32,6 @@ export default {
       const requestBody = body.requestBody;
       const headers = body.headers || {};
 
-      // Use environment variable if no API key provided
       let finalApiKey = apiKey;
 
       if (!finalApiKey) {
@@ -70,7 +67,6 @@ export default {
         'Content-Type': 'application/json'
       };
 
-      // آدرس نهایی درخواست
       let finalUrl = apiUrl;
 
       if (provider === 'anthropic') {
@@ -83,7 +79,6 @@ export default {
         fetchHeaders['Authorization'] = 'Bearer ' + finalApiKey;
       }
 
-      // Merge custom headers
       for (const key in headers) {
         fetchHeaders[key] = headers[key];
       }
