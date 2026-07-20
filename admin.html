@@ -110,9 +110,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .admin-sidebar-header p {
-            font-size: 12px; color: var(--text-muted); margin-top: 4px;
-        }
+        .admin-sidebar-header p { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
         .admin-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
         .admin-tab {
             width: 100%; padding: 14px 16px;
@@ -267,30 +265,19 @@
             padding-top: 12px; border-top: 1px solid var(--border);
         }
 
-        /* User Info Badges */
+        /* Chat Card User Info */
         .chat-card-user-info {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
+            display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;
         }
         .user-badge {
-            font-size: 12px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
+            font-size: 12px; padding: 4px 10px; border-radius: 20px;
+            display: inline-flex; align-items: center; gap: 4px;
         }
         .user-name {
-            background: rgba(26, 92, 58, 0.2);
-            color: #8fa89a;
-            border: 1px solid var(--border-light);
+            background: rgba(26, 92, 58, 0.2); color: #8fa89a; border: 1px solid var(--border-light);
         }
         .user-phone {
-            background: rgba(201, 168, 76, 0.1);
-            color: var(--gold);
-            border: 1px solid rgba(201, 168, 76, 0.3);
+            background: rgba(201, 168, 76, 0.1); color: var(--gold); border: 1px solid rgba(201, 168, 76, 0.3);
         }
 
         /* Editor */
@@ -353,7 +340,7 @@
         .training-item-question, .training-item-answer { font-size: 13px; line-height: 1.7; margin-bottom: 8px; }
         .training-item-question strong, .training-item-answer strong { color: var(--gold); }
 
-        /* Settings Form */
+        /* Settings */
         .settings-form {
             background: var(--bg-card); border: 1px solid var(--border);
             border-radius: var(--radius); padding: 24px;
@@ -739,36 +726,6 @@
     </div>
 
     <script src="js/config.js"></script>
-    <script>
-    // Security check
-    (function() {
-        var ADMIN_AUTH_KEY = 'oay_admin_authenticated';
-        var ADMIN_AUTH_TIMEOUT = 30 * 60 * 1000;
-
-        function checkAuth() {
-            var authData = localStorage.getItem(ADMIN_AUTH_KEY);
-            if (!authData) return false;
-            try {
-                var data = JSON.parse(authData);
-                if (Date.now() - data.timestamp > ADMIN_AUTH_TIMEOUT) {
-                    localStorage.removeItem(ADMIN_AUTH_KEY);
-                    return false;
-                }
-                return data.authenticated === true;
-            } catch(e) {
-                return false;
-            }
-        }
-
-        if (checkAuth()) {
-            document.getElementById('access-denied').style.display = 'none';
-            document.getElementById('admin-content').classList.add('active');
-        } else {
-            document.getElementById('access-denied').classList.add('active');
-            document.getElementById('admin-content').style.display = 'none';
-        }
-    })();
-    </script>
     <script src="js/admin.js"></script>
 </body>
 </html>
