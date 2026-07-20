@@ -36,21 +36,27 @@ export default {
 
       // Use environment variable if no API key provided
       let finalApiKey = apiKey;
+
       if (!finalApiKey) {
-        if (provider === 'groq') {
-          finalApiKey = env.GROQ_API_KEY;
-        } else if (provider === 'openai') {
-          finalApiKey = env.OPENAI_API_KEY;
-        } else if (provider === 'anthropic') {
-          finalApiKey = env.ANTHROPIC_API_KEY;
-        } else if (provider === 'google') {
-          finalApiKey = env.GOOGLE_API_KEY;
+        switch (provider) {
+          case 'groq':
+            finalApiKey = env.GROQ_API_KEY;
+            break;
+          case 'openai':
+            finalApiKey = env.OPENAI_API_KEY;
+            break;
+          case 'anthropic':
+            finalApiKey = env.ANTHROPIC_API_KEY;
+            break;
+          case 'google':
+            finalApiKey = env.GOOGLE_API_KEY;
+            break;
         }
       }
 
       if (!finalApiKey) {
-        return new Response(JSON.stringify({ 
-          error: 'API Key not found. Please set it in Cloudflare Worker environment variables or send it in request.' 
+        return new Response(JSON.stringify({
+          error: 'API Key not found.'
         }), {
           status: 400,
           headers: {
@@ -60,18 +66,19 @@ export default {
         });
       }
 
-      // Build headers for target API
       const fetchHeaders = {
         'Content-Type': 'application/json'
       };
+
+      // آدرس نهایی درخواست
+      let finalUrl = apiUrl;
 
       if (provider === 'anthropic') {
         fetchHeaders['x-api-key'] = finalApiKey;
         fetchHeaders['anthropic-version'] = '2023-06-01';
       } else if (provider === 'google') {
-        // Google uses query param
         const separator = apiUrl.includes('?') ? '&' : '?';
-        var finalUrl = apiUrl + separator + 'key=' + finalApiKey;
+        finalUrl = apiUrl + separator + 'key=' + finalApiKey;
       } else {
         fetchHeaders['Authorization'] = 'Bearer ' + finalApiKey;
       }
@@ -81,26 +88,26 @@ export default {
         fetchHeaders[key] = headers[key];
       }
 
-      const finalUrl = provider === 'google' ? finalUrl : apiUrl;
-
       const response = await fetch(finalUrl, {
         method: 'POST',
         headers: fetchHeaders,
         body: JSON.stringify(requestBody)
       });
 
-      const responseData = await response.json();
+      const text = await response.text();
 
-      return new Response(JSON.stringify(responseData), {
+      return new Response(text, {
         status: response.status,
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': response.headers.get('Content-Type') || 'application/json',
           'Access-Control-Allow-Origin': '*',
         }
       });
 
     } catch (error) {
-      return new Response(JSON.stringify({ error: error.message }), {
+      return new Response(JSON.stringify({
+        error: error.message
+      }), {
         status: 500,
         headers: {
           'Content-Type': 'application/json',
