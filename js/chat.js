@@ -40,11 +40,9 @@
         if (botSettings.presencePenalty === undefined) botSettings.presencePenalty = CONFIG.DEFAULT_PRESENCE_PENALTY;
     }
 
-    // Initialize when DOM is ready
     function init() {
         loadSettings();
 
-        // Check if user is registered
         try {
             var savedUser = localStorage.getItem('oay_user_info');
             if (savedUser) {
@@ -54,7 +52,6 @@
             userInfo = { name: '', phone: '' };
         }
 
-        // Show registration if not registered
         if (!userInfo.name || !userInfo.phone) {
             showRegistration();
             return;
@@ -62,7 +59,6 @@
 
         hideRegistration();
 
-        // Get DOM elements
         chatContainer = document.getElementById('chat-container');
         chatInput = document.getElementById('chat-input');
         sendBtn = document.getElementById('send-btn');
@@ -72,7 +68,6 @@
         chatHistoryEl = document.getElementById('chat-history');
         welcomeScreen = document.getElementById('welcome-screen');
 
-        // Load history from localStorage
         try {
             var saved = localStorage.getItem('oay_chats');
             if (saved) chatHistory = JSON.parse(saved);
@@ -80,10 +75,7 @@
             chatHistory = [];
         }
 
-        // Bind events
         bindEvents();
-
-        // Render history
         renderChatHistory();
     }
 
@@ -97,7 +89,6 @@
         var regError = document.getElementById('reg-error');
 
         if (regBtn) {
-            // Remove old listeners by cloning
             var newBtn = regBtn.cloneNode(true);
             regBtn.parentNode.replaceChild(newBtn, regBtn);
             regBtn = newBtn;
@@ -142,7 +133,6 @@
     }
 
     function bindEvents() {
-        // Send button click
         if (sendBtn) {
             sendBtn.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -150,7 +140,6 @@
             });
         }
 
-        // Enter key in textarea
         if (chatInput) {
             chatInput.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -161,7 +150,6 @@
             chatInput.addEventListener('input', autoResize);
         }
 
-        // New chat button
         if (newChatBtn) {
             newChatBtn.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -169,7 +157,6 @@
             });
         }
 
-        // Menu toggle
         if (menuToggle) {
             menuToggle.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -177,7 +164,6 @@
             });
         }
 
-        // Suggestion cards
         var suggestionCards = document.querySelectorAll('.suggestion-card');
         for (var i = 0; i < suggestionCards.length; i++) {
             suggestionCards[i].addEventListener('click', function(e) {
@@ -229,7 +215,6 @@
         var text = chatInput.value.trim();
         if (!text || isTyping) return;
 
-        // Check admin password
         if (text === CONFIG.ADMIN_PASSWORD) {
             openAdminPanel();
             chatInput.value = '';
@@ -239,18 +224,14 @@
 
         hideWelcomeScreen();
 
-        // Add user message
         addMessage('user', text);
         messages.push({ role: 'user', content: text });
 
-        // Clear input
         chatInput.value = '';
         chatInput.style.height = 'auto';
 
-        // Show typing
         showTyping();
 
-        // Get response
         getBotResponse().then(function(response) {
             hideTyping();
             addMessage('bot', response);
@@ -301,19 +282,13 @@
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
 
-        // Bold
         formatted = formatted.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-        // Italic
         formatted = formatted.replace(/\*(.+?)\*/g, '<em>$1</em>');
-        // Code blocks
         formatted = formatted.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-        // Inline code
         formatted = formatted.replace(/`([^`]+)`/g, '<code>$1</code>');
-        // Headers
         formatted = formatted.replace(/^### (.+)$/gm, '<h3>$1</h3>');
         formatted = formatted.replace(/^## (.+)$/gm, '<h2>$1</h2>');
         formatted = formatted.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-        // Line breaks
         formatted = formatted.replace(/\n/g, '<br>');
 
         return formatted;
@@ -351,14 +326,9 @@
         if (typingEl) typingEl.remove();
     }
 
-    // ============================================
-    // MAIN API CALL - With Proxy + Direct Fallback
-    // ============================================
     function getBotResponse() {
-        // Reload settings
         loadSettings();
 
-        // Load personality
         var personality = BOT_PERSONALITY;
         try {
             var savedPersonality = localStorage.getItem('oay_personality');
@@ -367,7 +337,6 @@
             }
         } catch(e) {}
 
-        // Load training data
         var trainingText = '';
         try {
             var savedTraining = localStorage.getItem('oay_training');
@@ -397,7 +366,6 @@
 
         var providerConfig = CONFIG.PROVIDERS[provider] || CONFIG.PROVIDERS.groq;
 
-        // Build request body and headers
         var requestBody;
         var targetHeaders = {};
 
@@ -441,11 +409,8 @@
                 }
             };
 
-            // For Google, we need to handle differently
-            // Try proxy first, then direct
             return callApiWithFallback(geminiUrl, requestBody, { 'Content-Type': 'application/json' }, provider, apiKey, true);
         } else {
-            // OpenAI-compatible format (Groq, OpenAI, Custom)
             targetHeaders['Authorization'] = 'Bearer ' + apiKey;
 
             var openaiMessages = [{ role: 'system', content: fullPersonality }];
@@ -467,15 +432,10 @@
             };
         }
 
-        // Try proxy first, then direct fallback
         return callApiWithFallback(apiUrl, requestBody, targetHeaders, provider, apiKey, false);
     }
 
-    // ============================================
-    // PROXY + DIRECT FALLBACK
-    // ============================================
     function callApiWithFallback(apiUrl, requestBody, targetHeaders, provider, apiKey, isGoogle) {
-        // First, try Proxy (if enabled and not on local file)
         var useProxy = CONFIG.USE_PROXY && window.location.protocol !== 'file:';
 
         if (useProxy) {
@@ -485,7 +445,6 @@
                     return callDirect(apiUrl, requestBody, targetHeaders, provider, apiKey, isGoogle);
                 });
         } else {
-            // Direct call (needs VPN for filtered APIs)
             return callDirect(apiUrl, requestBody, targetHeaders, provider, apiKey, isGoogle);
         }
     }
@@ -523,7 +482,6 @@
         };
 
         if (isGoogle) {
-            // Google uses query param
             apiUrl = apiUrl + '?key=' + apiKey;
         } else if (provider === 'anthropic') {
             headers['x-api-key'] = apiKey;
@@ -532,7 +490,6 @@
             headers['Authorization'] = 'Bearer ' + apiKey;
         }
 
-        // Merge target headers
         for (var key in targetHeaders) {
             headers[key] = targetHeaders[key];
         }
@@ -558,7 +515,6 @@
             }
             throw new Error('Invalid Google response format');
         } else {
-            // OpenAI format
             return data.choices[0].message.content;
         }
     }
@@ -700,7 +656,6 @@
         return div.innerHTML;
     }
 
-    // Global functions for inline onclick
     window.copyMessageText = function(btn) {
         var messageEl = btn.closest('.message');
         if (!messageEl) return;
@@ -713,7 +668,6 @@
         });
     };
 
-    // Start
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
